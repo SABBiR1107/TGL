@@ -11,9 +11,11 @@ interface OrderModalProps {
   product: Product | null;
   isOpen: boolean;
   onClose: () => void;
+  initialSize?: string;
+  initialQuantity?: number;
 }
 
-export const OrderModal: React.FC<OrderModalProps> = ({ product, isOpen, onClose }) => {
+export const OrderModal: React.FC<OrderModalProps> = ({ product, isOpen, onClose, initialSize, initialQuantity }) => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedOrderId, setConfirmedOrderId] = useState('');
@@ -37,10 +39,11 @@ export const OrderModal: React.FC<OrderModalProps> = ({ product, isOpen, onClose
       setFormData(prev => ({
         ...prev,
         category: product.category,
-        size: product.available_sizes[0] || '5KG',
+        size: initialSize || mapSize(product.available_sizes[0]) || '5KG',
+        quantity: initialQuantity || 1,
       }));
     }
-  }, [product]);
+  }, [product, initialSize, initialQuantity]);
 
   if (!product) return null;
 

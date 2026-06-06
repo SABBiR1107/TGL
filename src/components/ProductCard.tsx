@@ -3,10 +3,12 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 import { Product } from '@/types';
 import { formatPrice, cn, mapSize } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useCart } from '@/context/CartContext';
+import { toast } from 'react-hot-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +17,15 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onOrder }) => {
   const [currentMedia, setCurrentMedia] = React.useState(0);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const defaultSize = mapSize(product.available_sizes[0]) || '5KG';
+    addToCart(product, defaultSize, 1);
+    toast.success('Added to cart!');
+  };
 
   const media = [
     ...(product.video_url ? [product.video_url] : []),
@@ -126,13 +137,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOrder }) =>
           ))}
         </div>
 
-        <button
-          onClick={() => onOrder(product)}
-          disabled={product.stock_status !== 'In Stock'}
-          className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm tracking-wide transform active:scale-95 transition-all duration-200 hover:bg-black/90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {product.stock_status === 'In Stock' ? 'Order Now' : 'Out of Stock'}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => onOrder(product)}
+            disabled={product.stock_status !== 'In Stock'}
+            className="flex-1 bg-accent text-white py-3 rounded-xl font-bold text-xs tracking-wide transform active:scale-95 transition-all duration-200 hover:bg-black/90 disabled:opacity-50 disabled:cursor-not-allowed text-center"
+          >
+            {product.stock_status === 'In Stock' ? 'Order Now' : 'Out of Stock'}
+          </button>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={product.stock_status !== 'In Stock'}
+            className="flex-1 bg-secondary text-primary hover:bg-border border border-border py-3 rounded-xl font-bold text-xs tracking-wide transform active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            Add to Cart
+          </button>
+        </div>
       </div>
     </motion.div>
   );

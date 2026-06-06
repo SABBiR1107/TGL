@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ChevronRight, Star, ShieldCheck, Truck, RefreshCw, Loader2, ArrowLeft, Video } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
+import { toast, Toaster } from 'react-hot-toast';
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -20,6 +22,21 @@ export default function ProductDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [currentMedia, setCurrentMedia] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    if (product?.available_sizes?.length) {
+      setSelectedSize(mapSize(product.available_sizes[0]));
+    }
+  }, [product]);
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, selectedSize || '5KG', 1);
+      toast.success('Added to cart!');
+    }
+  };
 
   useEffect(() => {
     async function fetchProduct() {
@@ -190,9 +207,18 @@ export default function ProductDetailsPage() {
                   <label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-primary">Available Sizes / Weights</label>
                   <div className="flex flex-wrap gap-2 sm:gap-3">
                     {Array.from(new Set(product.available_sizes.map(mapSize))).map((size) => (
-                      <span key={size} className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-white border-2 border-border text-xs sm:text-sm font-bold text-primary">
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={cn(
+                          "px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 text-xs sm:text-sm font-bold transition-all",
+                          selectedSize === size
+                            ? "border-accent bg-accent/5 text-accent"
+                            : "border-border bg-white text-primary hover:border-accent/50"
+                        )}
+                      >
                         {size}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -205,6 +231,14 @@ export default function ProductDetailsPage() {
                   >
                     <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
                     {product.stock_status === 'In Stock' ? 'Order Now' : 'Out of Stock'}
+                  </button>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={product.stock_status !== 'In Stock'}
+                    className="flex-1 h-12 sm:h-16 bg-secondary border border-border text-primary hover:bg-border rounded-xl sm:rounded-2xl font-black tracking-widest uppercase flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 text-sm sm:text-base"
+                  >
+                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Add to Cart
                   </button>
                   <button
                     onClick={() => router.push('/')}
@@ -235,11 +269,13 @@ export default function ProductDetailsPage() {
         </div>
       </main>
 
+      <Toaster position="bottom-center" />
       {isOrderModalOpen && (
         <OrderModal
           product={product}
           isOpen={isOrderModalOpen}
           onClose={() => setIsOrderModalOpen(false)}
+          initialSize={selectedSize}
         />
       )}
 
