@@ -62,8 +62,8 @@ export default function ProductDetailsPage() {
   }
 
   const media = product ? [
-    ...(product.image_urls?.length ? product.image_urls : [product.image_url]),
-    ...(product.video_url ? [product.video_url] : [])
+    ...(product.video_url ? [product.video_url] : []),
+    ...(product.image_urls?.length ? product.image_urls : [product.image_url])
   ] : [];
 
   return (

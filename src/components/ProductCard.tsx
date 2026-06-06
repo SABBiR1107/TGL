@@ -17,8 +17,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOrder }) =>
   const [currentMedia, setCurrentMedia] = React.useState(0);
 
   const media = [
-    ...(product.image_urls?.length ? product.image_urls : [product.image_url]),
-    ...(product.video_url ? [product.video_url] : [])
+    ...(product.video_url ? [product.video_url] : []),
+    ...(product.image_urls?.length ? product.image_urls : [product.image_url])
   ];
 
   const nextMedia = (e: React.MouseEvent) => {
