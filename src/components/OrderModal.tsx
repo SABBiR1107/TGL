@@ -207,7 +207,10 @@ export const OrderModal: React.FC<OrderModalProps> = ({ product, isOpen, onClose
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-secondary-text">Quantity</label>
+                      <div className="flex justify-between items-center">
+                        <label className="text-xs font-bold uppercase tracking-wider text-secondary-text">Quantity</label>
+                        <span className="text-xs font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-md">{formData.quantity * 2} Pieces</span>
+                      </div>
                       <input
                         type="number"
                         name="quantity"
