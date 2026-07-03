@@ -135,7 +135,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({ product, isOpen, onClose
                       </div>
                       <div className="flex-1">
                         <h4 className="font-bold">{product.name}</h4>
-                        <p className="text-sm text-secondary-text">{formatPrice(product.price)} x {formData.quantity} = {formatPrice(product.price * formData.quantity)}</p>
+                        <p className="text-sm text-secondary-text">
+                          {formatPrice(product.price)} x {formData.quantity} <span className="font-medium text-accent">({formData.quantity * 2} Pieces)</span> = {formatPrice(product.price * formData.quantity)}
+                        </p>
                         <p className="text-xs text-accent font-bold mt-1">+ Delivery Charge: {formatPrice(formData.deliveryCharge)}</p>
                       </div>
                     </div>
